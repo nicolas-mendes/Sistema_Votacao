@@ -14,6 +14,11 @@ class Option extends Model
     {
         return $this->belongsTo(Pool::class);
     }
+
+    protected $fillable = [
+        'text',
+        'votes',
+    ];
 }
 
 

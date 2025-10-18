@@ -3,13 +3,15 @@
     <x-forms.form action="/pools" method="POST">
         
         <x-forms.input 
+            required    
             label="Título" 
             name="title" 
             placeholder="Ex: Enquete sobre Cinema" />
 
         <x-forms.input 
+            required    
             label="Pergunta" 
-            name="description" 
+            name="question" 
             type="text" 
             placeholder="Ex: Qual seu filme favorito?" />
 
@@ -17,6 +19,7 @@
             <div class="flex flex-col md:flex-row justify-between gap-x-4 gap-y-4">
 
                 <x-forms.input 
+                    required
                     label="Data de Início" 
                     name="date_start" 
                     type="datetime-local" 
@@ -25,6 +28,7 @@
                     x-model="date_start" />
                 
                 <x-forms.input 
+                    required
                     label="Data de Encerramento" 
                     name="date_end" 
                     type="datetime-local"
@@ -52,10 +56,12 @@
             :key="index">
                 <div class="flex items-center gap-x-2 mb-2">
                     
-                    <x-forms.options.input name="options[]" 
-                    x-bind:placeholder="'Opção ' + (index + 1)" 
-                    x-model="option.value" 
-                    class="w-full" />
+                    <x-forms.options.input 
+                        required
+                        name="options[]" 
+                        x-bind:placeholder="'Opção ' + (index + 1)" 
+                        x-model="option.value" 
+                        class="w-full" />
 
                     <button type="button" 
                     @click.prevent="options.splice(index, 1)" 

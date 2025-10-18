@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+@theme {
+            
+
+    --font-mont: 'Montserrat','sans-serif';
+    --font-honk: 'Hanken Grotesk', 'sans-serif';
+
+    
+    --color-grape-50: oklch(0.9722 0.02 296.18);
+    --color-grape-100: oklch(0.9427 0.04 296.18);
+    --color-grape-200: oklch(0.8899 0.079 296.18);
+    --color-grape-300: oklch(0.8051 0.116 296.18);
+    --color-grape-400: oklch(0.6987 0.16 296.18);
+    --color-grape-500: oklch(0.5743 0.1932 296.18);
+    --color-grape: oklch(0.5743 0.1932 296.18);
+    --color-grape-600: oklch(0.5273 0.22 296.18);
+    --color-grape-700: oklch(0.4753 0.211 296.18);
+    --color-grape-800: oklch(0.4113 0.187 296.18);
+    --color-grape-900: oklch(0.3481 0.158 296.18);
+    --color-grape-950: oklch(0.2624 0.112 296.18);
+
+    --color-base: oklch(0.20 0.02 290);
+    --color-surface-1: oklch(0.25 0.02 290);
+    --color-surface-2: oklch(0.30 0.02 290);
+
+  
+    --color-primary: oklch(0.95 0.01 290);
+    --color-secondary: oklch(0.75 0.015 290);
+    --color-disabled: oklch(0.50 0.01 290);
+
+
+    
+    --color-success: oklch(0.65 0.18 150);
+    --color-danger: oklch(0.62 0.22 25);
+    --color-warning: oklch(0.75 0.15 85);
+        
+}

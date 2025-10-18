@@ -1,0 +1,1 @@
+<div {{$attributes(['class'=>'bg-white/10 my-4 md:my-8 h-px w-full'])}}></div>

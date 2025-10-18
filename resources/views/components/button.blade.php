@@ -1,0 +1,2 @@
+@props(['type' => ""])
+<button type="{{ $type }}" {{ $attributes(['class'=>"py-1 px-2 md:p-2 font-bold bg-surface-2 rounded-md border border-transparent hover:border-grape-200 hover:text-grape-200 transition-colors duration-300"]) }}>{{ $slot }}</button>

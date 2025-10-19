@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Option;
 use App\Models\Pool;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -39,12 +40,9 @@ class PoolController extends Controller
             'options.*' => ['required','string','max:255']
         ]);
 
-
         $attributes['date_start'] = Carbon::parse($attributes['date_start']);
         $attributes['date_end'] = Carbon::parse($attributes['date_end']);
 
-        // 3. Agora a sua lógica 'if' funciona corretamente,
-        // pois 'date_start' JÁ É um objeto Carbon.
         if ($attributes['date_start']->isAfter(now())) {
             $attributes['status'] = 'not started';
         } else {
@@ -60,7 +58,7 @@ class PoolController extends Controller
             ]);
         }
 
-        return redirect("/vote/$pool->id");
+        return redirect("/show/$pool->id");
     }
 
     /**
@@ -80,9 +78,12 @@ class PoolController extends Controller
             $pool->save();
         }
 
-        return view('vote.show', [ // Supondo que sua view seja 'vote.show'
-            'pool' => $pool->load('options') // Carrega a enquete com suas opções
-        ]);
+        if ($now->isBefore($pool->date_start) && $pool->status === 'in progress') {
+            $pool->status = 'not started';
+            $pool->save();
+        }
+
+        return view('pools.show', ['pool' => $pool]);
     }
 
     /**
@@ -99,6 +100,29 @@ class PoolController extends Controller
     public function update(Request $request, string $id)
     {
         //
+    }
+
+    public function vote(Request $request, Pool $pool)
+    {
+        $validated = $request->validate([
+            'option_id' => [
+                'required', 
+                'exists:options,id,pool_id,' . $pool->id
+            ]
+        ], [
+            'option_id.required' => 'Por favor, selecione uma opção para votar.'
+        ]);
+
+        if ($pool->status !== 'in progress') {
+            return back()->with('error', 'Esta enquete não está recebendo votos no momento.');
+        }
+
+        $option = Option::find($validated['option_id']);
+
+        $option->increment('votes');
+
+        return redirect()->route('vote.show', $pool);
+
     }
 
     /**

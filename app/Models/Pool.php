@@ -15,4 +15,17 @@ class Pool extends Model
     {
         return $this->hasMany(Option::class);
     }
+
+    protected $fillable = [
+        'title',
+        'question',
+        'date_start',
+        'date_end',
+        'status',
+    ];
+    
+    protected $casts = [
+        'date_start' => 'datetime',
+        'date_end' => 'datetime',
+    ];
 }

@@ -10,7 +10,7 @@ class Option extends Model
 {
     use HasFactory;
 
-    public function options() :BelongsTo
+    public function pool() :BelongsTo
     {
         return $this->belongsTo(Pool::class);
     }
@@ -18,7 +18,7 @@ class Option extends Model
     protected $fillable = [
         'text',
         'votes',
+        'pool_id',
     ];
 }
-
 

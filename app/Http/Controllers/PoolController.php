@@ -15,7 +15,9 @@ class PoolController extends Controller
      */
     public function index()
     {
-        //
+        $pools = Pool::latest()->paginate(10);
+
+        return view('list', ['pools' => $pools]);
     }
 
     /**
@@ -32,12 +34,12 @@ class PoolController extends Controller
     public function store(Request $request)
     {
         $attributes = $request->validate([
-            'title' => ['required','string','max:255'], 
-            'question' => ['required','string','max:255'], 
-            'date_start' => ['required','date_format:Y-m-d\TH:i','after_or_equal:today'], 
-            'date_end' => ['required','date_format:Y-m-d\TH:i','after:date_start'], 
-            'options' => ['required','array','min:1'],
-            'options.*' => ['required','string','max:255']
+            'title' => ['required', 'string', 'max:255'],
+            'question' => ['required', 'string', 'max:255'],
+            'date_start' => ['required', 'date_format:Y-m-d\TH:i', 'after_or_equal:today'],
+            'date_end' => ['required', 'date_format:Y-m-d\TH:i', 'after:date_start'],
+            'options' => ['required', 'array', 'min:1'],
+            'options.*' => ['required', 'string', 'max:255']
         ]);
 
         $attributes['date_start'] = Carbon::parse($attributes['date_start']);
@@ -58,21 +60,21 @@ class PoolController extends Controller
             ]);
         }
 
-        return redirect("/show/$pool->id");
+        return redirect("/pools/$pool->id");
     }
 
     /**
      * Display the specified resource.
      */
     public function show(Pool $pool)
-{
-        $now = now(); 
+    {
+        $now = now();
 
         if ($now->isAfter($pool->date_end) && $pool->status !== 'finished') {
             $pool->status = 'finished';
             $pool->save();
         }
-        
+
         if ($now->isAfter($pool->date_start) && $pool->status === 'not started') {
             $pool->status = 'in progress';
             $pool->save();
@@ -89,24 +91,69 @@ class PoolController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Pool $pool)
     {
-        //
+        return view('pools.edit', ['pool' => $pool]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Pool $pool)
     {
-        //
+        if ($pool->status === 'finished') {
+            return back()->with('error', 'Não é possível editar uma enquete finalizada.');
+        }
+
+        $attributes = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'question' => ['required', 'string', 'max:255'],
+            'date_start' => ['required', 'date_format:Y-m-d\TH:i'],
+            'date_end' => ['required', 'date_format:Y-m-d\TH:i', 'after:date_start'],
+            'options' => ['required', 'array', 'min:3', 'max:10'],
+            'options.*.id' => ['nullable', 'exists:options,id,pool_id,' . $pool->id],
+            'options.*.text' => ['required', 'string', 'max:255']
+        ]);
+
+        $attributes['date_start'] = Carbon::parse($attributes['date_start']);
+        $attributes['date_end'] = Carbon::parse($attributes['date_end']);
+
+
+        if ($attributes['date_start']->isAfter(now())) {
+            $attributes['status'] = 'not started';
+        } else {
+            $attributes['status'] = 'in progress';
+        }
+
+        $pool->update(Arr::except($attributes, ['options']));
+
+
+        $submittedOptions = collect($attributes['options']);
+        $finalOptionIds = [];
+
+        foreach ($submittedOptions as $optionData) {
+            $option = $pool->options()->updateOrCreate(
+                [
+                    'id' => $optionData['id']
+                ],
+                [
+                    'text' => $optionData['text']
+                ]
+            );
+            $finalOptionIds[] = $option->id;
+        }
+
+        $pool->options()->whereNotIn('id', $finalOptionIds)->delete();
+
+        return redirect()->route('pools.show', $pool)->with('success', 'Enquete atualizada!');
     }
+
 
     public function vote(Request $request, Pool $pool)
     {
         $validated = $request->validate([
             'option_id' => [
-                'required', 
+                'required',
                 'exists:options,id,pool_id,' . $pool->id
             ]
         ], [
@@ -121,15 +168,16 @@ class PoolController extends Controller
 
         $option->increment('votes');
 
-        return redirect()->route('vote.show', $pool);
-
+        return redirect()->route('pools.vote', $pool);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Pool $pool)
     {
-        //
+        $pool->delete();
+
+        return redirect('/pools');
     }
 }

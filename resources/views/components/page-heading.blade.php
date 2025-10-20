@@ -5,6 +5,8 @@
     'weight' => 'font-bold',
 ])
 
-<h1 {{ $attributes->merge(['class' => ''])->class([$weight, $align, $size, $margin]) }}>
-    {{ $slot }}
-</h1>
+<div class="break-words w-xs md:w-xl justify-self-center">
+    <h1 {{ $attributes->merge(['class' => ''])->class([$weight, $align, $size, $margin]) }}>
+        {{ $slot }}
+    </h1>
+</div>

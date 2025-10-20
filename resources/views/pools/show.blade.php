@@ -10,8 +10,8 @@
             </x-display-time>
         </div>
 
-        <x-forms.form method="POST" action="/show/{{ $pool->id }}">
-            
+        <x-forms.form method="POST" action="/pools/{{ $pool->id }}  ">
+
             @if ($pool->status === 'not started')
                 <x-error class="m-0 text-center">Essa enquete ainda não começou</x-error>
             @elseif ($pool->status === 'finished')
@@ -24,7 +24,7 @@
                 <fieldset>
                     <div class="space-y-3">
                         @foreach ($pool->options as $option)
-                            <x-pools.option :$option />
+                            <x-pool.option :$option />
                         @endforeach
                     </div>
                 </fieldset>
@@ -41,13 +41,19 @@
                     </x-error>
                 @endif
 
-                <x-forms.button class="mt-6 sm:mt-8" :disabled="$pool->status !== 'in progress'">
-                    @if ($pool->status !== 'in progress')
-                        Votação Indisponível
-                    @else
-                        Confirmar Voto
-                    @endif
-                </x-forms.button>
+                <div class="flex justify-between items-center mt-6 sm:mt-8">
+                    <x-forms.button class="" :disabled="$pool->status !== 'in progress'">
+                        @if ($pool->status !== 'in progress')
+                            Votação Indisponível
+                        @else
+                            Confirmar Voto
+                        @endif
+                    </x-forms.button>
+                    <a href="{{ route('pools.edit', $pool) }}"
+                        class="py-2 px-8 font-bold bg-success/90 rounded-md border border-transparent hover:border-green-200 transition-colors duration-300 disabled:bg-disabled disabled:cursor-not-allowed disabled:opacity-70">
+                        EDITAR
+                    </a>
+                </div>
 
             </div>
         </x-forms.form>

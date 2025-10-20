@@ -21,4 +21,3 @@ class Option extends Model
         'pool_id',
     ];
 }
-
